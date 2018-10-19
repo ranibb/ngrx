@@ -38,7 +38,19 @@ export class LoginComponent implements OnInit {
 
   login() {
 
-    this.store.dispatch(new Login())
+    const val = this.form.value;
+
+    this.auth.login(val.email, val.password)
+      .pipe(
+        tap(user => {
+          this.store.dispatch(new Login({user}))
+          this.router.navigateByUrl('/courses')
+        })
+      )
+      .subscribe(
+        noop, // noop stands for "No Operation"
+        () => alert('Login Faild')
+      )
 
   }
 
