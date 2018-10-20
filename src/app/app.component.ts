@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
 
     ngOnInit() {
 
+      this.store.subscribe(state => console.log("state", state))
 
     }
 
