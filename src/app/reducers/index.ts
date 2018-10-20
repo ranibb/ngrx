@@ -18,7 +18,12 @@ export interface AppState {
   auth: AuthState
 }
 
-function authReducer(state: AuthState, action) : AuthState {
+export const initialAuthState: AuthState = {
+  loggedIn: false,
+  user: undefined
+};
+
+function authReducer(state: AuthState = initialAuthState, action) : AuthState {
   switch(action.type) {
 
     case AuthActionTypes.LoginAction: return {
@@ -26,7 +31,7 @@ function authReducer(state: AuthState, action) : AuthState {
       user: action.payload.user
     }
 
-    default: state;
+    default: return state;
 
   }
 }
