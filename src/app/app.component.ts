@@ -3,6 +3,7 @@ import {select, Store} from "@ngrx/store";
 import {Observable} from "rxjs";
 import { Logout } from './auth/auth.actions';
 import { AppState } from './reducers';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -11,15 +12,17 @@ import { AppState } from './reducers';
 })
 export class AppComponent implements OnInit {
 
-
-
     constructor(private store: Store<AppState>) {
 
     }
 
     ngOnInit() {
 
-      this.store.subscribe(state => console.log("state", state))
+      this.store
+      .pipe(
+        map(state => state.auth.loggedIn)
+      )
+      .subscribe(loggedIn => console.log("loggedIn", loggedIn))
 
     }
 
