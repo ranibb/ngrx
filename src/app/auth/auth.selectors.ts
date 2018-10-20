@@ -20,3 +20,8 @@ export const isLoggedIn = createSelector(
   auth => auth.loggedIn
 )
 
+export const isLoggedOut = createSelector (
+  isLoggedIn,
+  loggedIn => !loggedIn
+)
+
