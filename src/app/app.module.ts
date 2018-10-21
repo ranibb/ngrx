@@ -21,13 +21,14 @@ import {RouterStateSerializer, StoreRouterConnectingModule} from "@ngrx/router-s
 
 import { EffectsModule } from '@ngrx/effects';
 import { reducers, metaReducers } from './reducers';
+import { AuthGuardService } from './auth/auth-guard.service';
 
 
 const routes: Routes = [
     {
         path: 'courses',
         loadChildren: './courses/courses.module#CoursesModule',
-        canActivate: [],
+        canActivate: [AuthGuardService],
     },
     {
         path: "**",
