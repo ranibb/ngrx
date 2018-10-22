@@ -7,7 +7,6 @@ export enum AuthActionTypes {
 }
 
 export class Login implements Action {
-  user: User
   readonly type = AuthActionTypes.LoginAction;
 
   constructor(public payload: {user: User}) {}
