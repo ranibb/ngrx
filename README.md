@@ -59,4 +59,24 @@ The key thing with the store implementation is that when we are dispatching an a
 The component dispatching the action is essentially dispatching an event something that has happened in the local scope of the component. The component does not know about other components on the application and what those components are doing with the store information. It simply knows about the store from which it collects the data via selectors and it reports events back to the store using actions.
 
 
+## Serving the data to the component via the router using a standard router resolver
 
+Right now, we are serving the data to the component via the router using a standard router resolver that is taking an identifier from the URL and using it to retrieve data from the backend using a service.
+
+As we are navigating through the application, we are continuously fetching data from the backend and repeating fetching for the same data again and again. Thus, the user is constantly seeing loading indicators on the screen causing a bad experience. Moreover, these constant HTTP requests put a lot of load on the server unnecessarily.
+
+To improve, refactor the resolver to fetch the data only once, keep it in the store and retrieve it from the in-memory store avoiding having to call again the server.
+
+In case of storing a collection of data, we are going to use the ngrx entity package.
+
+## NgRx Entity
+
+For implementing a ngrx feature, start by writing the actions; create a new actions file and define in it an enum containing action types. Each action has an origin and event.
+
+The first action is courseRequested, dispatched by the origin of the action [View Course Page] in order to report back to the store that we are looking for a given course that we did not find inside the store. The event that is linked to this action is Course Requested. In this case we are triggering an effect that is going to call the backend to retrieve the course with the given course ID. Once that happens, that effect is going to dispatch a new action, this time around the CourseLoaded action. This means that the origin of action is no longer the [View Course Page], the origin of action is the [Courses API] call that we just made. The event that is linked to this action is Course Loaded.
+
+Next, define a class for each action implementing the Action interface and define the read-only property type by pointing to the corresponding element of the enum. Define a constructor for each class. In case of courseRequested constructor, it is going to take a public property called payload containing a property courseId which is of type number that identifies what course was requested. In case of CourseLoaded constructor,the property of the payload is the course itself, the Course data is going to be dispatched to the store and via a reducer, the course is going to be saved in the in-memory store.
+
+Finally, define a union type called courseActions. So, an element of type courseActions is going to be either of type courseRequested or CourseLoaded.
+
+Now that we have defined the actions of a new ngrx feature, go ahead and define the form of the corresponding courses state in the store using ngrx entity. Thus, the Collection of courses (entities) in the store.
