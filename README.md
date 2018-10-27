@@ -80,3 +80,13 @@ Next, define a class for each action implementing the Action interface and defin
 Finally, define a union type called courseActions. So, an element of type courseActions is going to be either of type courseRequested or CourseLoaded.
 
 Now that we have defined the actions of a new ngrx feature, go ahead and define the form of the corresponding courses state in the store using ngrx entity. Thus, the Collection of courses (entities) in the store.
+
+## Storing a collection of entities in the in-memory store
+
+In a new reducers file, we could be tempted to store the coursesEntities (a collection) in an array which leads to a couple of problems. Looping through a large array looking for a course (entity) with a given ID is potentially inefficient. Operations such as adding a course in the middle of the array, adding a course to the end, deleting only part of the array or even updating a course, generates a lot of boilerplate in our reducers and it's potentially inefficient for a large collection.
+
+Also, what if we have another collection. If we would store this also in an array, we would have to write the same reducer logic for doing the same operations. We would have to implement that per collection that we add to our application. That would mean adding a lot of boilerplate to our application and we want to avoid that.
+
+A better way of storing a collection in memory is to use a map. The map is going to have a key which is going to be the ID of the course (Id of the entity) and the value would be the course (the entity). This way we can do a lookup by ID very quickly. But there is a problem in storing our collection as a map which is we lose the information about in which order the courses (entities) are sorted. Typically, a collection has an order and that is important information for our user interface. To preserve the order of the courses (entities) that we are storing, we can store the courses order (entities order) in an array where each course order (entity order) would be the ID of the given course (entity). This means that in our reducers in certain operations such as adding an entity to the collection, we would have to populate a couple of properties, an entities property and an order property.
+
+And of course, if we would have another collection such as for example the lessonsEntities, we would have to define a similar type for storing the lessons (entities). This would become very repetitive as we would need to define this for every single model of our application and we want to avoid that.
