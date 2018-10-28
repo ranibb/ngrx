@@ -1,15 +1,8 @@
 import { Course } from './model/course';
+import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity'
 
-export interface CourseState {
-
-  coursesEntities: {[key: number]: Course};
-  coursesOrder: number[];
+export interface CoursesState extends EntityState<Course>{
 
 }
 
-export interface LessonsState {
-
-  lessonsEntities : {[key:number]: Course};
-  lessonsOrder: number[];
-  
-}
+export const adaptor: EntityAdapter<Course> = createEntityAdapter<Course>();
