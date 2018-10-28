@@ -96,3 +96,31 @@ In order to avoid having to define an interface per each collection of entities 
 In order to easily generate selectors and implement reducers functions for this entity, we define an entity adapter for this collection type Course by calling the createEntityAdapter function.
 
 One of the methods that this adaptor makes available for us is a method called getSelectors which gives us a series of commonly used selectors such as selecting all the entities in the collection. Also, we have the method getInitialState that helps us to produce the initial state that we need to pass to our reducer.
+
+## Implementing a Router Resolver using NgRx Store
+
+In order to configure the CourseResolver (EntityResolver) to use the store we are going to need a selector for queering the store with a given ID. If the course (entity) already exist, return it immediately. Otherwise, dispatch the CourseRequested action.
+
+In a new selectors file, as usual the first thing that we're going to do is to define a feature selector for the CoursesState. For that declare a constant selectCoursesState and assign to it the createFeatureSelector utility function from ngrx store with a parametric type CoursesState and to the argument of this utility specify the property name “courses” under which we are going to find the state in the ngrx dev tools.
+
+The feature selector will return the complete CoursesState meaning the courses (entities) and the array of IDs that preserves the courses order. So, we are returning the CoursesState interface that we have defined in the reducers file.
+
+Now with this feature selector in place we are ready to define our first selector, selectCourseById.
+
+To create a selector that finds a course (entity) by ID, means that we need a selector with a parameter. Therefore, we cannot define it directly by calling createSelector. Instead we are going to define a function that is going to take the identifier courseId as parameter and return a createSelector function passing in a couple of arguments: The first argument is a list of selectors that we want to apply, in our case we have selectCoursesState. The last argument is a projector function that is going to take the CoursesState selected by the feature selector. So, this is the complete CoursesState containing both the course (entity) and the identifier of this entity.  You can now look inside the entities dictionary with the identifier courseId. 
+
+So, selectCourseById selector is going to return one of two things: It will return undefined If the course with the give identifier is not present in the store or it will return the course (entity) itself If it is already there. 
+
+Now have everything that we need to implement the new version of our course resolver.
+
+So, in our resolver, we are no longer going to do a call each time that we do a route navigation. Instead, the first thing that we're going to do is to query the store to see if the course with the given identifier is already there. For that pipe in the rxjs select operator passing to it the selectCourseById function passing to it the identifier coursed. The result of this call is an observable that it's either going to returns a course (entity) if it is present or undefined.
+
+To handle the case when the course is not present in the store, we will use the rxjs tap operator to dispatch a new CourseRequested action containing the courseId property. Remember: This is not a command to the store saying what it should do. This is reporting to the store an event that has happened.
+
+And with this, the implementation of this course resolver is practically completed but we are missing a couple of small details:
+
+The first thing, what happens if the course is not yet available in the store. If that's the case we don't want the router transition to go through. So, we want to filter out this undefined value. We don't want to send that to the router. Let's then use the rxjs filter operator and filter out the cases when the course is not yet available in the store.
+
+The second thing, for the router transition to go through and considered completed, we need to make sure that this observable terminates only when this observable gets completed. So, whenever we meet our first course we will have this observable completed using the ngrx first operator. If we don't call the rxjs first operator then the router transition is never going to complete and we're going to remain in the source route. We will never reach the target route.
+
+And with this we have finished the implementation of our resolver. We have detected that this course was needed in the store and we have informed the store of that request. The store is then going to decide what to do with this request. In this case we are going to be sending a call to our backend using a ngrx effect.

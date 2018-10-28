@@ -6,8 +6,11 @@ import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from "@angular/rou
 import {Course} from "../model/course";
 import {Observable} from "rxjs";
 import {CoursesService} from "./courses.service";
-import { Store } from "@ngrx/store";
+import { Store, select } from "@ngrx/store";
 import { AppState } from "../../reducers";
+import { selectCourseById } from "../course.selectors";
+import { tap, filter, first } from "rxjs/operators";
+import { CourseRequested } from "../course.actions";
 
 
 
@@ -23,7 +26,17 @@ export class CourseResolver implements Resolve<Course> {
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Course> {
         const courseId = route.params['id'];
-        return this.coursesService.findCourseById(courseId);
+        return this.store
+            .pipe(
+                select(selectCourseById(courseId)),
+                tap(course => {
+                    if(!course) {
+                        this.store.dispatch(new CourseRequested({courseId}));
+                    }
+                }),
+                filter(course => !!course),
+                first()
+            )
     }
 
 }
