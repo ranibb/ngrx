@@ -71,15 +71,17 @@ In case of storing a collection of data, we are going to use the ngrx entity pac
 
 ## NgRx Entity
 
-For implementing a ngrx feature, start by writing the actions; create a new actions file and define in it an enum containing action types. Each action has an origin and event.
+For implementing a ngrx feature, start by writing the actions. For that, define an enum containing action types. The first action is EntityRequested, dispatched by the origin of the action [View Entity Page] in order to report back to the store that we are looking for a given entity that we did not find inside the store. The event that is linked to this action is 'Entity Requested' in which we are triggering an effect that is going to call the backend to retrieve the entity with the given entity ID. Once that happens, that effect is going to dispatch a new action, this time around the EntityLoaded action. This means that the origin of action now becomes the [Entities API] call that we just made and the event that is linked to this action is 'Entity Loaded'.
 
-The first action is courseRequested, dispatched by the origin of the action [View Course Page] in order to report back to the store that we are looking for a given course that we did not find inside the store. The event that is linked to this action is Course Requested. In this case we are triggering an effect that is going to call the backend to retrieve the course with the given course ID. Once that happens, that effect is going to dispatch a new action, this time around the CourseLoaded action. This means that the origin of action is no longer the [View Course Page], the origin of action is the [Courses API] call that we just made. The event that is linked to this action is Course Loaded.
+After defining an enumeration containing action types where each action has an origin and event, define a class for each action in the enumeration by implementing the Action interface and define the read-only property type by pointing to the corresponding element of the enumeration.
 
-Next, define a class for each action implementing the Action interface and define the read-only property type by pointing to the corresponding element of the enum. Define a constructor for each class. In case of courseRequested constructor, it is going to take a public property called payload containing a property courseId which is of type number that identifies what course was requested. In case of CourseLoaded constructor,the property of the payload is the course itself, the Course data is going to be dispatched to the store and via a reducer, the course is going to be saved in the in-memory store.
+Define a constructor for each class. In case of EntityRequested class, the constructor is going to take a public property called payload containing a property entityId that identifies what entity was requested. In case of EntityLoaded class, the constructor’s payload is the entity itself. 
 
-Finally, define a union type called courseActions. So, an element of type courseActions is going to be either of type courseRequested or CourseLoaded.
+    Via a resolver, you could use the EntityRequested action to dispatch the identifier to the store, reporting an event. The store might decide to call the backend via an effect which in turn triggers the EntityLoaded action. The entity is saved in the in-memory store via a reducer.
 
-Now that we have defined the actions of a new ngrx feature, go ahead and define the form of the corresponding courses state in the store using ngrx entity. Thus, the Collection of courses (entities) in the store.
+To complete definition of the actions, declare a union type called EntityActions. So, an element of type EntityActions is going to be either of type EntityRequested or EntityLoaded.
+
+Now that we have defined the actions of a new ngrx feature, we will define the form of the corresponding entities state in the store using ngrx entity package.
 
 ## Storing a collection of entities in the in-memory store
 
@@ -124,3 +126,6 @@ The first thing, what happens if the course is not yet available in the store. I
 The second thing, for the router transition to go through and considered completed, we need to make sure that this observable terminates only when this observable gets completed. So, whenever we meet our first course we will have this observable completed using the ngrx first operator. If we don't call the rxjs first operator then the router transition is never going to complete and we're going to remain in the source route. We will never reach the target route.
 
 And with this we have finished the implementation of our resolver. We have detected that this course was needed in the store and we have informed the store of that request. The store is then going to decide what to do with this request. In this case we are going to be sending a call to our backend using a ngrx effect.
+
+## Loading Data From the Backend using NgRx Effects
+
