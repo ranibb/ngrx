@@ -22,6 +22,7 @@ import {RouterStateSerializer, StoreRouterConnectingModule} from "@ngrx/router-s
 import { EffectsModule } from '@ngrx/effects';
 import { reducers, metaReducers } from './reducers';
 import { AuthGuardService } from './auth/auth-guard.service';
+import { CustomSerializer } from './shared/utils';
 
 
 const routes: Routes = [
@@ -57,7 +58,9 @@ const routes: Routes = [
         EffectsModule.forRoot([]),
         StoreRouterConnectingModule.forRoot({stateKey: 'router'})
     ],
-    providers: [],
+    providers: [
+        { provide: RouterStateSerializer, useClass: CustomSerializer }
+    ],
     bootstrap: [AppComponent]
 })
 export class AppModule {
