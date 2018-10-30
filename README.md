@@ -148,3 +148,21 @@ NgRx entity makes it very simple to write reducers for entities using the adapto
 Because we don't want any cancellation logic on this request. mergeMap would cause multiple parallel requests in case our CourseRequested action was going to be emitted multiple times.
 
 Some actions that are linked to the clicking of a button might potentially be issued multiple times. That does not happen in the concrete case of this action so we can go ahead and use the mergeMap operator.
+
+## Implementing an NgRx Entity Reducer
+
+As we have just fetched a course from the backend using the loadCourse$ effect and we have dispatched it to the store using the CourseLoaded action. Let's then go ahead and write the reducer logic for the CourseLoaded action that will save the course in-memory to the CoursesState that extends the EntityState from ngrx entity package.
+
+We need to Specify to the EntityState a parametric type of Course, the model of Course data. Notice, the CoursesState is represented in store as an object that will contain the entities map and the ids array. Each entity in the entities map has a key (ID of the course) and a value (course). The array will store the ID of the courses in order. Thus, preserving the information about in which order the entities are sorted.
+
+With that in mind, create a reducer function and name it CoursesReducer. As usual the first argument of a reducer function is the state and the second argument is an action of type CourseActions. So, an element of type CourseActions is going to be either of type CourseRequested or CourseLoaded.  The result of the reducer function is going to be CoursesState. As usual in the implementation of a reducer body, we are going to do a switch on the action type to handle multiple actions.
+
+In case of CourseLoaded action, we want to take the course from the action payload and add it to the CoursesState. In order to create a new copy of the CoursesState which is a ngrx entity, we first need to create an entity adaptor of type EntityAdapter from ngrx entity package. We need to specify to the  EntityAdapter a parametric type of Course, the model of Course data.
+
+The adaptor will provide the addOne method that takes the course we want to add to the store as first argument, and the initial state copy as a second argument. The initial state can be defined using the adaptor’s method getInitialState. So, declare a constant initialCoursesState of type CoursesState and use it as a default value to the state parameter of the coursesReducer.
+
+Last but not least, as usual add the default case clause to handle a case when this reducer does not react to this particular action. So, in this case we don't know what reducer logic to apply to this action so we are going to return the state as it is.
+
+Finally, Register the CoursesReducer in the CoursesModule by passing it to the StoreModule.forFeature method along with the string ‘courses’ name under which this feature state is going to be visible in the dev tools.
+
+Now reload the application and switch to the dev tools. Take a look at our state… We have concluded the implementation of the course resolver using the ngrx store solution instead of making calls to the backend each time.
