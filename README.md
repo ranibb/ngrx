@@ -129,3 +129,22 @@ And with this we have finished the implementation of our resolver. We have detec
 
 ## Loading Data From the Backend using NgRx Effects
 
+In a new effects file, implement a new ngrx effect that is going to listen for actions of type CourseRequested and in response to that, it’s going to fetch a course from the backend.
+
+Begin with creating a side effects class that we're going to call CourseEffects. This is going to contain all the effects linked to the course entity. Make it an angular service by annotating the class with the injectable decorator and then in the coursesModule declare it as being a ngrx feature module that contains feature side effects. For that use EffectsModule.forFeature method and pass it in the CourseEffects class. And with this our CourseEffects classes is plugged into the framework so let's now implement a side effect called loadCourse$.
+
+Annotate this side effect observable with the Effect decorator and inject the ngrx effects actions$ observable into the class constructor that we are going to be using to derive our loadCourse$ observable. So, actions$ is of type Actions that is imported from the ngrx effects package.
+
+The type of actions we are responding to with the side effect loadCourse$ are of type CourseRequested. So, in order to obtain it from the actions$ observable, we will pipe in the ngrx operator ofType and reach out to it through enum CourseActionTypes. Also add to the ngrx operator ofType a parametric type <CourseRequested>. This is going to return an observable that emits values of type CourseRequested. At this point we are essentially filtering for actions of type CourseRequested.
+
+With this action in hand, switch to a call to the backend using the rxjs mergMap operator and reach out to the findCourseById method available in the CoursesService which is injected to the constructor and pass to this method the courseId that we have in the payload of CourseRequested action. The result of calling mergeMap is going to be an observable that is going to be emitting the course objects coming from the backend.
+
+With the course object in hand, we are going to instantiate a CourseLoaded action from it using the rxjs map operator. And with this, the loadCourse$ side effect is now emitting actions containing the course being sent to the store which in turn will save it in memory via a reducer. After that, the course can be broadcasted to the [view course page].
+
+NgRx entity makes it very simple to write reducers for entities using the adaptor.
+
+*Why using mergeMap and not switchMap?*
+
+Because we don't want any cancellation logic on this request. mergeMap would cause multiple parallel requests in case our CourseRequested action was going to be emitted multiple times.
+
+Some actions that are linked to the clicking of a button might potentially be issued multiple times. That does not happen in the concrete case of this action so we can go ahead and use the mergeMap operator.
