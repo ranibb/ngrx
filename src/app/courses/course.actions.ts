@@ -3,7 +3,9 @@ import { Course } from "./model/course";
 
 export enum CourseActionTypes {
   CourseRequested = '[View Course Page] Course Requested',
-  CourseLoaded = '[Courses API] Course Loaded'
+  CourseLoaded = '[Courses API] Course Loaded',
+  AllCoursesRequested = '[Courses Home Page] All Courses Requested',
+  AllCoursesLoaded = '[Courses API] All Course Loaded'
 }
 
 export class CourseRequested implements Action {
@@ -22,4 +24,18 @@ export class CourseLoaded implements Action {
 
 }
 
-export type CourseActions = CourseRequested | CourseLoaded
+export class AllCoursesRequested implements Action {
+
+  readonly type = CourseActionTypes.AllCoursesLoaded;
+
+}
+
+export class AllCoursesLoaded implements Action {
+
+  readonly type = CourseActionTypes.AllCoursesLoaded;
+
+  constructor(public payload: { courses: Course[]} ) {}
+
+}
+
+export type CourseActions = CourseRequested | CourseLoaded | AllCoursesRequested | AllCoursesLoaded
