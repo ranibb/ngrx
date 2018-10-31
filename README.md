@@ -166,3 +166,27 @@ Last but not least, as usual add the default case clause to handle a case when t
 Finally, Register the CoursesReducer in the CoursesModule by passing it to the StoreModule.forFeature method along with the string ‘courses’ name under which this feature state is going to be visible in the dev tools.
 
 Now reload the application and switch to the dev tools. Take a look at our state… We have concluded the implementation of the course resolver using the ngrx store solution instead of making calls to the backend each time.
+
+## Courses List Component - Implementing the Store Solution
+
+After defining the actions that we need for our new ngrx application feature, let's go ahead and refactor the home component. So instead of being responsible for fetching the data that it needs from the backend and storing that data locally in observables that we are defining as member variables, the ngrx store will take this responsibility of fetching and storing the data.
+
+So, If the component needs some data, it is going to query the store by piping in the ngrx select operator which in turn will apply a selector from the selectors file that is selecting the slice of data we need which is a list of courses.
+
+So, in the selectors file, Let’s define this new selector selectAllCourses using createSelector function as usual and apply the feature selector “selectCourseState” that is selecting the complete CoursesState and generate the output of the selector by writing the projector function. 
+
+One way:
+
+To this function we are going to have the argument CoursesState and to the implementation of this function, we could manually write some logic that gets the ids. Then applying object.values to this entities map, we will get a complete list of courses then we will have to sort the courses according to the ids that are defined in the IDs array.
+
+Alternative way:
+
+Instead of doing that manually, it’s much easier to use the adapter that we have created in the reducers file to quickly generate such commonly needed operations. So, following a common ngrx convention, we are going to create our entity selectors at the bottom of our reducers file, by declaring an exportable constant object and equalizing it to the adaptor’s function getsSelectors. The object now would contain a list of very commonly used selectors such as selectAll selector. If you check the signature of the selectAll selector, this is taking a state of type `EntityState<course>` and it's returning an array. So, this array is going to be sorted according to the IDs array that we are storing also in memory in the store.
+
+Back to the selectors file, Let's import everything from the reducers file as fromCourse and apply the selectAll in place of the projector function.
+
+So, now home component is no longer fetching the data directly. It's instead fetching it from the store. But the problem is that the first time this component gets loaded, nothing is present on the store. In order to signal to the store that the courses data is needed, we need to dispatch the AllCoursesRequested action that we have defined in the actions file.
+
+As we can see, the home component will no longer need the CoursesService. It only needs the store in order to fetch its data. With this we have finished the refactoring of our home component. This is a good example of what is known as a Container Component using the ngrx terminology. It's a component that gets the store injected on its constructor and it queries the data that it needs using a selector.
+
+Let's now implement the side effect that is going to load the data and save it in the store.

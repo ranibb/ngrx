@@ -26,7 +26,7 @@ export class CourseLoaded implements Action {
 
 export class AllCoursesRequested implements Action {
 
-  readonly type = CourseActionTypes.AllCoursesLoaded;
+  readonly type = CourseActionTypes.AllCoursesRequested;
 
 }
 

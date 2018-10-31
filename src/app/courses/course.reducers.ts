@@ -21,3 +21,7 @@ export function coursesReducer(state = initialCoursesState, action: CourseAction
   }
 
 }
+
+export const { 
+  selectAll
+} = adaptor.getSelectors()
