@@ -190,3 +190,9 @@ So, now home component is no longer fetching the data directly. It's instead fet
 As we can see, the home component will no longer need the CoursesService. It only needs the store in order to fetch its data. With this we have finished the refactoring of our home component. This is a good example of what is known as a Container Component using the ngrx terminology. It's a component that gets the store injected on its constructor and it queries the data that it needs using a selector.
 
 Let's now implement the side effect that is going to load the data and save it in the store.
+
+## A side effect to fetch & dispatch data and a clause in the reducer to save data in the store.
+
+As we have dispatched the AllCoursesRequested action to the store, let's implement the side effect that is going to fetch the data from the backend and dispatch it to the store by instantiating the AllCoursesLoaded action. Then in the reducer, we need to implement a case clause for the instantiated action where we will adapt the data into a new CoursesState and save it to the store using the addAll method provided by the EntityAdapter.
+
+This data will have a life cycle independent of the component. As the component gets destroyed through application navigation, the data will still be available in the store. But notice that whenever the home component gets instantiated this effect will each time fetch the data again from the back end. We have not yet implemented the logic that will conditionally fetch the data only if the data is not yet present.

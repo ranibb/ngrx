@@ -34,7 +34,7 @@ export class AllCoursesLoaded implements Action {
 
   readonly type = CourseActionTypes.AllCoursesLoaded;
 
-  constructor(public payload: { courses: Course[]} ) {}
+  constructor(public payload: {courses: Course[]}) {}
 
 }
 
