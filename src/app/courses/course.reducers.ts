@@ -3,12 +3,14 @@ import { EntityState, EntityAdapter, createEntityAdapter } from '@ngrx/entity'
 import { CourseActions, CourseActionTypes } from './course.actions';
 
 export interface CoursesState extends EntityState<Course>{
-
+  flagAllCoursesLoaded : boolean;
 }
 
 export const adapter: EntityAdapter<Course> = createEntityAdapter<Course>();
 
-export const initialCoursesState: CoursesState = adapter.getInitialState()
+export const initialCoursesState: CoursesState = adapter.getInitialState({
+  flagAllCoursesLoaded : false
+})
 
 export function coursesReducer(state = initialCoursesState, action: CourseActions): CoursesState {
 
@@ -16,7 +18,7 @@ export function coursesReducer(state = initialCoursesState, action: CourseAction
 
     case CourseActionTypes.CourseLoaded: return adapter.addOne(action.payload.course, state);
 
-    case CourseActionTypes.AllCoursesLoaded: return adapter.addAll(action.payload.courses, state);
+    case CourseActionTypes.AllCoursesLoaded: return adapter.addAll(action.payload.courses, {...state, flagAllCoursesLoaded: true});
 
     default: return state;
 

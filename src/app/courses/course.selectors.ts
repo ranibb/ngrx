@@ -14,3 +14,8 @@ export const selectAllCourses = createSelector(
   selectCoursesState,
   fromCourse.selectAll
 )
+
+export const flagAllCoursesLoaded_Selector = createSelector(
+  selectCoursesState,
+  coursesState => coursesState.flagAllCoursesLoaded
+)
