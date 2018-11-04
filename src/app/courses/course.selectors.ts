@@ -19,3 +19,18 @@ export const flagAllCoursesLoaded_Selector = createSelector(
   selectCoursesState,
   coursesState => coursesState.flagAllCoursesLoaded
 )
+
+export const selectbeginnerCourses = createSelector(
+  selectAllCourses,
+  courses => courses.filter(course => course.category == "BEGINNER")
+)
+
+export const selectAdvancedCourses = createSelector(
+  selectAllCourses,
+  courses => courses.filter(course => course.category == "ADVANCED")
+)
+
+export const selectpromoTotal = createSelector(
+  selectAllCourses,
+  courses => courses.filter(course => course.promo).length
+)

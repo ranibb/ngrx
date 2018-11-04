@@ -208,3 +208,19 @@ To query the store for this specific flag state, we need a selector for it. So, 
 Back to the effect, we could use the rxjs withLatestFrom operator to couple the observable that contains the action of type AllCoursesRequested with an new observable that is selecting the flag state with the help of the ngrx select operator. This coupling will produce a tuple variable containing the results from both observables. Passing this tuple to the rxjs filter operator, we can decide if we should proceed to the backend call or not depending on the flag state.
 
 What we need to do now to finish this implementation is to set flagAllCoursesLoaded to true whenever the courses are first loaded. So, in the case clause of AllcoursesLoaded action in our reducer, we modify this flag as we add the courses to the state. This is done by passing in a copy of the state along with the flag property being set to true. So, whenever we dispatched AllcoursesLoaded action to the store, we also set the flag to true and that will prevent the backend from being called again due to the filter condition.
+
+## Component as Pure Projections of State
+
+As we have by now refactored our home component to get its data from the store instead of calling the backend directly by deriving an observable of selecting all the courses from the CoursesState in the store using the SelectAllCourses selector, we want to further refactor our components so that even the beginnerCourses$, advancedCourses$ and promotionTotal$ observables are derived from selectors. This will turn the component into what’s known as a pure projection of state.
+
+We can define the selectBeginnerCourses selector by composing the selectAllCourses selector by taking it to the arguments of the CreateSelector function and projecting out of it the beginner category by filtering the array of all courses. Now that we have defined the selector, we can derive the beginnerCourses$ observable from the selector instead of being derived from a map operator.
+
+The same thing can be done for both advancedCourses and promotionTotals observables. So, in practice we will no longer need this constant course$ observable which is selecting the selectAllCourses.
+
+*What is the benefit of using a selector over the map operator?*
+
+A selector is a function like the map function that takes as input a state of the store and generates as output a slice or a subset of that state. Unlike the map function which causes the store to calculate and emit new versions of that state slice although it is not changed, the selector function optimizes the performance by remembering the calculation and emits new versions of that state slice only if it has been changed in the store. This is known in functional programming as Memoization.
+
+Another benefit is that the ngrx select operator is going to eliminate duplicates. So, if the list that we are getting back is exactly the same, our component is not going to receive a new value from the beginnerCourses$ observable. Depending on the change detection strategy that we are using that might be beneficial in terms of performance for our user interface because our view is not being updated unless the data coming out of the store is different.
+
+A note to be taken, the advantage of passing these observables (streams of data) into our container component using the synchronous pipe is that there are no manual rxjs subscriptions. Therefore, the async pipe is going to unsubscribe from these observables whenever the component gets destroyed.

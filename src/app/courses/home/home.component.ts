@@ -4,7 +4,7 @@ import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../../reducers';
-import { selectAllCourses } from '../course.selectors';
+import { selectAllCourses, selectbeginnerCourses, selectAdvancedCourses, selectpromoTotal } from '../course.selectors';
 import { AllCoursesRequested } from '../course.actions';
 
 @Component({
@@ -28,22 +28,11 @@ export class HomeComponent implements OnInit {
 
         this.store.dispatch(new AllCoursesRequested());
 
-        const courses$ = this.store
-            .pipe(
-                select(selectAllCourses)
-            )
+        this.beginnerCourses$ = this.store.pipe(select(selectbeginnerCourses));
 
-        this.beginnerCourses$ = courses$.pipe(
-          map(courses => courses.filter(course => course.category === 'BEGINNER') )
-        );
+        this.advancedCourses$ = this.store.pipe(select(selectAdvancedCourses));
 
-        this.advancedCourses$ = courses$.pipe(
-            map(courses => courses.filter(course => course.category === 'ADVANCED') )
-        );
-
-        this.promoTotal$ = courses$.pipe(
-            map(courses => courses.filter(course => course.promo).length)
-        );
+        this.promoTotal$ = this.store.pipe(select(selectpromoTotal));
 
     }
 
