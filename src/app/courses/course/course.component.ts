@@ -58,7 +58,12 @@ export class CourseComponent implements OnInit, AfterViewInit {
     }
 
     loadLessonsPage() {
-        
+        const newPage: PageQuery = {
+           pageIndex: this.paginator.pageIndex,
+           pageSize: this.paginator.pageSize
+        };
+
+        this.dataSource.loadLessons(this.course.id, newPage)
     }
 
 
