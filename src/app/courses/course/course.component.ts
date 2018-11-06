@@ -6,6 +6,9 @@ import {CoursesService} from "../services/courses.service";
 import {debounceTime, distinctUntilChanged, startWith, tap, delay} from 'rxjs/operators';
 import {merge, fromEvent} from "rxjs";
 import {LessonsDataSource} from "../services/lessons.datasource";
+import { Store } from '@ngrx/store';
+import { AppState } from '../../reducers';
+import { PageQuery } from '../course.actions';
 
 
 @Component({
@@ -25,7 +28,7 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
 
     constructor(private route: ActivatedRoute,
-                private coursesService: CoursesService) {
+                private store: Store<AppState>) {
 
     }
 
@@ -33,9 +36,14 @@ export class CourseComponent implements OnInit, AfterViewInit {
 
         this.course = this.route.snapshot.data["course"];
 
-        this.dataSource = new LessonsDataSource(this.coursesService);
+        this.dataSource = new LessonsDataSource(this.store);
 
-        this.dataSource.loadLessons(this.course.id, 0, 3);
+        const initialPage: PageQuery = {
+            pageIndex : 0,
+            pageSize: 3
+        };
+
+        this.dataSource.loadLessons(this.course.id, initialPage);
 
     }
 

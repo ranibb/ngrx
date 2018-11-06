@@ -6,6 +6,9 @@ import {Observable, BehaviorSubject, of} from "rxjs";
 import {Lesson} from "../model/lesson";
 import {CoursesService} from "./courses.service";
 import {catchError, finalize} from "rxjs/operators";
+import { Store } from "@ngrx/store";
+import { AppState } from "../../reducers";
+import { PageQuery } from "../course.actions";
 
 
 
@@ -17,13 +20,12 @@ export class LessonsDataSource implements DataSource<Lesson> {
 
     public loading$ = this.loadingSubject.asObservable();
 
-    constructor(private coursesService: CoursesService) {
+    constructor(private store: Store<AppState>) {
 
     }
 
     loadLessons(courseId:number,
-                pageIndex:number,
-                pageSize:number) {
+                page: PageQuery) {
 
         this.loadingSubject.next(true);
 
