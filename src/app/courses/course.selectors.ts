@@ -54,3 +54,8 @@ export const selectLessonsPage = (courseId:number, page: PageQuery) => createSel
       .slice(start, end)
   }
 );
+
+export const selectLessonsLoading = createSelector(
+  selectLessonsState,
+  lessonsState => lessonsState.loading
+)
