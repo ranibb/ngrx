@@ -29,6 +29,8 @@ export function lessonsReducer(state = initialLessonsState, action: CourseAction
 
   switch(action.type) {
 
+    case CourseActionTypes.LessonsPageCancelled: return {...state, loading: false}
+
     case CourseActionTypes.LessonsPageRequested: return {...state, loading: true}
 
     case CourseActionTypes.LessonsPageLoaded: return adapter.addMany(action.payload.lessons, {...state, loading: false})
